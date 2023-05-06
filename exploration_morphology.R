@@ -44,13 +44,13 @@ morph_analysis <- function(var, formula, categorical) {
   summary(res)
   
   #Plotting adjusted p-values for each morphological cluster
-  png(paste("morph_plots/adjusted_P_values_",var,".png", sep=""))
+  png(paste("morph_plots/adjusted_P_values/adjusted_P_values_",var,".png", sep=""))
   plot(rownames(morph_counts), res$padj)
   abline(h=0.1, col="red") #cutoff?
   dev.off()
   
   #Normalized counts of cluster
-  png(paste("morph_plots/normalized_counts_",var,".png", sep=""))
+  png(paste("morph_plots/normalized_counts/normalized_counts_",var,".png", sep=""))
   plotMA(res)
   #TODO: bigger dots
   dev.off()
@@ -72,7 +72,7 @@ morph_analysis <- function(var, formula, categorical) {
   
   #Volcano plot
   if (categorical) {
-    png(paste("morph_plots/volcano_",var,".png", sep=""))
+    png(paste("morph_plots/volcano/volcano_",var,".png", sep=""))
     par(mfrow=c(1,1))
     with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
     with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
