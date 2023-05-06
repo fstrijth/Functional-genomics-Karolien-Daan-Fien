@@ -99,6 +99,10 @@ morph_analysis <- function(var, formula, categorical) {
   with(res, plot(log2FoldChange, -log10(pvalue), pch=19, main=paste("Volcano plot ", var,sep=""), xlim=c(-3,3)))
   with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=19, col="blue"))
   with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=19, col="red"))
+  legend(x="topright", 
+         legend=c("Padj > 0.1", "Padj < 0.1", "Padh < 0.1 and log2FC > 2"),
+         col=c("black", "blue", "red"),
+         pch=19)
   dev.off()
   
   #PCA
