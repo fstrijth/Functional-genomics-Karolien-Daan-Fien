@@ -25,9 +25,14 @@ row.names(morph_counts) = gsub("Mophological.cluster.", "", row.names(morph_coun
 
 #Automatically generates interesting plots in function of var
 #All plots are saved under morph_plots/ and file names end in the variable name
-#In case of a categorical variable, deseq2's plotCounts can be called, if you want that
-#, set pltcnt to TRUE
-morph_analysis <- function(var, formula, pltcnt) {
+#In case of a categorical variable, there are some extra plots that can be
+#generated lile plotCounts and volcano plot. These are not interesting
+#for the other variables because they are typically made in a 
+#"cancer/no cancer" type situation, this can be an interesting style
+#of analysis for e.g. postmortem/donor, but not for weight or height.
+
+morph_analysis <- function(var, formula, categorical) {
+  
   #construct DESEQDataset object
   dds = DESeqDataSetFromMatrix(countData = morph_counts, 
                                colData = clinical_data,
@@ -47,39 +52,45 @@ morph_analysis <- function(var, formula, pltcnt) {
   #Normalized counts of cluster
   png(paste("morph_plots/normalized_counts_",var,".png", sep=""))
   plotMA(res)
+  #TODO: bigger dots
   dev.off()
   
   #sort results by p-value
   res <- res[order(res$padj),]
-
+  
+  #TODO: save list of most significant clusters
   
   #Plot the counts of the clusters with the lowest adjusted p-values
-  if (pltcnt) {
-    png(paste("morph_plots/counts_by_",var,".png", sep=""))
-    par(mfrow=c(3,4))
+  if (categorical) {
     clusters = rownames(head(res,10))
     for (cluster in clusters) {
-      plotCounts(dds, gene=cluster, intgroup=var)
+      png(paste("morph_plots/counts_by_",var,"/",cluster,".png", sep=""))
+      plotCounts(dds, gene=cluster, intgroup=var, main=paste("Cluster ",cluster,sep=""))
+      dev.off()
     }
-    dev.off()
   }
   
   #Volcano plot
-  png(paste("morph_plots/volcano_",var,".png", sep=""))
-  par(mfrow=c(1,1))
-  with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
-  with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
-  with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
-  dev.off()
+  if (categorical) {
+    png(paste("morph_plots/volcano_",var,".png", sep=""))
+    par(mfrow=c(1,1))
+    with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
+    with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
+    with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+    dev.off()
+  }
   
   #PCA
   #TODO???
 }
+
+
 
 morph_analysis("COHORT", ~ COHORT, TRUE)
 morph_analysis("DTHHRDY", ~ DTHHRDY, TRUE)
 morph_analysis("AGE", ~ AGE, FALSE)
 morph_analysis("HGHT", ~ HGHT, FALSE)
 morph_analysis("WGHT", ~ WGHT, FALSE)
+morph_analysis("TRISCHD", ~TRISCHD, FALSE)
 
 
