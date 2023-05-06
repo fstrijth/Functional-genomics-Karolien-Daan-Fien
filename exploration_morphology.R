@@ -1,5 +1,6 @@
 library("DESeq2")
 library(ggplot2)
+library(corrplot)
 
 # Q2: clinical data vs. morphology
 # 1) Compute systematically associations between clinical variables and morphological
@@ -106,13 +107,23 @@ morph_analysis <- function(var, formula, categorical) {
   #TODO???
 }
 
-
-
-morph_analysis("COHORT", ~ COHORT, TRUE)
-morph_analysis("DTHHRDY", ~ DTHHRDY, TRUE)
+#Q2.1: clinical variables
 morph_analysis("AGE", ~ AGE, FALSE)
 morph_analysis("HGHT", ~ HGHT, FALSE)
 morph_analysis("WGHT", ~ WGHT, FALSE)
+
+#Q2.2: Technical variables
+morph_analysis("COHORT", ~ COHORT, TRUE)
+morph_analysis("DTHHRDY", ~ DTHHRDY, TRUE)
 morph_analysis("TRISCHD", ~TRISCHD, FALSE)
+
+#Q2.3: Accounting for confounding variables
+#TODO
+
+#Plotting correlation
+#TODO: only for relevant morphological clusters
+png("test.png")
+corrplot(cor(t(morph_counts)))
+dev.off()
 
 
