@@ -94,14 +94,12 @@ morph_analysis <- function(var, formula, categorical) {
   #Blue = padj < 0.1
   #Red = padj < 0.1 and fold change > 2
   #https://en.wikipedia.org/wiki/Volcano_plot_(statistics)
-  if (categorical) {
-    png(paste("morph_plots/volcano/volcano_",var,".png", sep=""))
-    par(mfrow=c(1,1))
-    with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
-    with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
-    with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
-    dev.off()
-  }
+  png(paste("morph_plots/volcano/volcano_",var,".png", sep=""))
+  par(mfrow=c(1,1))
+  with(res, plot(log2FoldChange, -log10(pvalue), pch=19, main=paste("Volcano plot ", var,sep=""), xlim=c(-3,3)))
+  with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=19, col="blue"))
+  with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=19, col="red"))
+  dev.off()
   
   #PCA
   #TODO???
@@ -111,6 +109,7 @@ morph_analysis <- function(var, formula, categorical) {
 morph_analysis("AGE", ~ AGE, FALSE)
 morph_analysis("HGHT", ~ HGHT, FALSE)
 morph_analysis("WGHT", ~ WGHT, FALSE)
+morph_analysis("BMI", ~BMI, FALSE)
 
 #Q2.2: Technical variables
 morph_analysis("COHORT", ~ COHORT, TRUE)
@@ -119,6 +118,7 @@ morph_analysis("TRISCHD", ~TRISCHD, FALSE)
 
 #Q2.3: Accounting for confounding variables
 #TODO
+
 
 #Plotting correlation
 #TODO: only for relevant morphological clusters
