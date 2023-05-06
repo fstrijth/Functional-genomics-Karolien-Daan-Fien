@@ -46,7 +46,7 @@ morph_analysis <- function(var, formula, categorical) {
   #Plotting adjusted p-values for each morphological cluster
   png(paste("morph_plots/adjusted_P_values/adjusted_P_values_",var,".png", sep=""))
   plot(rownames(morph_counts), res$padj)
-  abline(h=0.1, col="red") #cutoff?
+  abline(h=0.1, col="red")
   dev.off()
   
   #Normalized counts of cluster
@@ -56,9 +56,12 @@ morph_analysis <- function(var, formula, categorical) {
   dev.off()
   
   #sort results by p-value
-  res <- res[order(res$padj),]
+  res <- na.omit(res[order(res$padj),])
   
-  #TODO: save list of most significant clusters
+  #Save list of most significant clusters
+  #cutoff: padj has to be smaller than 0.1
+  sign_clusters = res[res$padj < 0.1,]
+  write.csv(sign_clusters, paste("Morph_plots/cluster_lists/lowest_padj_",var,".csv",sep=""))
   
   #Plot the counts of the clusters with the lowest adjusted p-values
   if (categorical) {
